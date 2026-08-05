@@ -1,0 +1,128 @@
+{
+  "project_id": 2,
+  "title": "AudioOverImage Producer",
+  "folder_name": "002-AudioOverImage-Producer",
+  "category": "Media Engine & Content Generators",
+  "target_os": "Windows 10 / Windows 11 (x64 Native Executable / PyInstaller .exe)",
+  "version": "1.0.0-PROD",
+  "overview": "A production-grade, ultra-performant content generation desktop engine designed for podcast producers, musicians, and audio creators. It merges audio streams (podcasts, music, voiceovers) with static or animated background images and dynamic real-time audio waveform/spectrum visualizers. Employs zero-waste FFmpeg stream looping, zero-copy buffer pipes, NumPy audio spectrum analysis, Pillow image compositing, and a real-time Tkinter preview canvas, delivering YouTube/Shorts/TikTok-ready MP4 output.",
+  "key_features": [
+    "WYSIWYG Live Canvas Preview: Interactive viewport with aspect ratio bounding boxes, waveform position dragging, and background scaling preview",
+    "Multi-Aspect Ratio Presets: YouTube 16:9 (1920x1080 / 3840x2160 4K), YouTube Shorts/TikTok 9:16 (1080x1920), Instagram Square 1:1 (1080x1080), and Ultrawide 21:9 (2560x1080)",
+    "Advanced Background Processing Modes: Cover (Crop to fit), Contain (Pillarbox/Letterbox), Stretch, and Dual-Layer Gaussian Blur Padding",
+    "Dynamic Waveform & Spectrum Visualizer Engine: Customizable render modes (Line Waveform, Solid Bars, Circular Spectrum, Audio Frequency Histogram) with real-time color gradient controls",
+    "Automatic Audio Sync & Metadata Extraction: High-precision FFprobe duration probing down to fractional millisecond values",
+    "Hardware-Accelerated Encoder Auto-Detection: NVENC (NVIDIA), QSV (Intel), and AMF (AMD) with automated software CPU (libx264) fallback",
+    "Non-Blocking Asynchronous Processing: Thread-safe queue architecture for continuous stderr progress telemetry parsing, rendering ETA calculation, and instant process cancellation"
+  ],
+  "core_stack": {
+    "python_version": "3.10+",
+    "gui_framework": "CustomTkinter >= 5.2.0",
+    "drag_and_drop": "TkinterDnD2 / tkinterdnd2-universal",
+    "concurrency": "threading.Thread, queue.Queue, subprocess.Popen",
+    "packaging": "PyInstaller 6.0+ (Standalone .exe)",
+    "image_processing": "Pillow (PIL) >= 10.0.0 (High-quality Lanczos resampling, blurring, composite rendering)",
+    "math_and_audio": "NumPy >= 1.24.0 (Vectorized RMS calculation, frequency FFT binning, normalized amplitude matrices)",
+    "transcoding_engine": "FFmpeg & FFprobe Static Executables (Build 6.0+)"
+  },
+  "design_system_and_theme": {
+    "theme_name": "Studio Emerald & Cyber Slate",
+    "color_palette": {
+      "background_primary": "#0A0E14",
+      "background_secondary": "#131B26",
+      "surface_card": "#1A2332",
+      "accent_primary": "#00E676",
+      "accent_secondary": "#1DE9B6",
+      "accent_hover": "#00C853",
+      "text_primary": "#E0E6ED",
+      "text_secondary": "#90A4AE",
+      "danger_red": "#FF5252",
+      "warning_amber": "#FFD700",
+      "border_color": "#263238"
+    },
+    "typography": {
+      "font_family": "Segoe UI, Inter, sans-serif",
+      "heading_size": 18,
+      "subheading_size": 14,
+      "body_size": 12,
+      "caption_size": 10
+    },
+    "preview_canvas_spec": {
+      "aspect_ratios": {
+        "16:9": {
+          "width": 1920,
+          "height": 1080,
+          "label": "YouTube Standard (16:9)"
+        },
+        "9:16": {
+          "width": 1080,
+          "height": 1920,
+          "label": "Shorts / Reels / TikTok (9:16)"
+        },
+        "1:1": {
+          "width": 1080,
+          "height": 1080,
+          "label": "Instagram Square (1:1)"
+        },
+        "21:9": {
+          "width": 2560,
+          "height": 1080,
+          "label": "Cinematic Ultrawide (21:9)"
+        }
+      }
+    }
+  },
+  "system_architecture": {
+    "pattern": "Model-View-Controller (MVC) with Asynchronous Thread-Safe Event Queue",
+    "main_ui_thread": "CustomTkinter 60 FPS loop managing UI events, live canvas updates, user controls, and polling event queues every 40ms",
+    "worker_threads": "Background Python threads executing non-blocking stream & engine tasks",
+    "inter_thread_communication": "Thread-safe queue.Queue passing typed telemetry payloads: ('PROGRESS', percent, frame, time, fps, eta), ('CANVAS_FRAME', PIL_Image), ('LOG', text), ('COMPLETE', output_path), ('ERROR', err_str)",
+    "process_safety": "Thread-safe event queue passing, clean process tree termination, and memory safety",
+    "ui_thread": "CustomTkinter main loop polling queue.Queue every 40ms for 60 FPS UI responsiveness"
+  },
+  "ffmpeg_pipeline_optimization": {
+    "zero_waste_static_loop": "-loop 1 -framerate {fps} -i {bg_image_path} -i {audio_path} -c:v {codec} -tune stillimage -preset medium -crf 18 -c:a aac -b:a 192k -pix_fmt yuv420p -shortest {output_path}",
+    "waveform_overlay_filtergraph": "[0:v]scale={w}:{h}:force_original_aspect_ratio=decrease,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2:color=black[bg];[1:a]showwaves=s={wave_w}x{wave_h}:mode=line:colors={color}:scale=lin[wave];[bg][wave]overlay=x={x}:y={y}[outv]",
+    "freq_spectrum_filtergraph": "[0:v]scale={w}:{h}[bg];[1:a]showfreqs=s={wave_w}x{wave_h}:mode=bar:ascale=log:fscale=log:colors={color}[wave];[bg][wave]overlay=x={x}:y={y}[outv]",
+    "hardware_acceleration_fallback_order": [
+      "h264_nvenc",
+      "h264_qsv",
+      "h264_amf",
+      "libx264"
+    ]
+  },
+  "binary_resolution_order": [
+    "sys._MEIPASS (PyInstaller frozen runtime bundle root)",
+    "Application root directory / 'bin' subfolder",
+    "System environment PATH (shutil.which)",
+    "User interactive manual binary file selection dialog"
+  ],
+  "packaging_spec": {
+    "entry_point": "main.py",
+    "output_binary_name": "AudioOverImageProducer.exe",
+    "bundle_mode": "onedir / standalone exe",
+    "icon_asset": "assets/icon.ico",
+    "datas": [
+      [
+        "assets/",
+        "assets"
+      ],
+      [
+        "bin/ffmpeg.exe",
+        "."
+      ],
+      [
+        "bin/ffprobe.exe",
+        "."
+      ]
+    ],
+    "hidden_imports": [
+      "customtkinter",
+      "tkinterdnd2",
+      "PIL",
+      "queue",
+      "concurrent.futures"
+    ]
+  },
+  "ai_agent_prompt": "You are an elite Senior Desktop Media Systems & UI Engineer tasked with implementing a production-grade Windows desktop application titled 'AudioOverImage Producer'.\n\n### PROJECT OBJECTIVE:\nConstruct a zero-cpu-waste content creation utility that merges audio tracks (podcasts, songs, voiceovers) with static or processed background images and real-time audio waveform/spectrum visualizations to output social-media-ready MP4 videos.\n\n### MANDATORY TECHNICAL REQUIREMENTS:\n1. DISTINCT UI & THEME (STUDIO EMERALD & CYBER SLATE):\n   - Implement a dark-mode studio theme using #0A0E14 (Background), #131B26 (Sidebar/Panels), #00E676 (Primary Neon Emerald Accent), and #1DE9B6 (Teal Secondary Accent).\n   - Responsive layout featuring a left control sidebar, central WYSIWYG image canvas preview with aspect ratio guides, render controls footer, and collapsible terminal log.\n\n2. WYSIWYG LIVE CANVAS PREVIEW ENGINE:\n   - Build a real-time Tkinter Canvas component that scales image inputs according to selected aspect ratios (16:9, 9:16, 1:1, 21:9) and scaling modes (Cover, Contain with custom padding, Blur Fill).\n   - Render interactive visual overlay bounding boxes allowing users to visually reposition the audio waveform overlay.\n\n3. FFMPEG ZERO-WASTE TRANSCODING ENGINE:\n   - Construct high-performance FFmpeg filtergraphs using -loop 1 with -tune stillimage and -shortest flags to eliminate repetitive re-encoding overhead.\n   - Dynamically build complex filtergraphs (filter_complex) for showwaves (waveform lines/bars) and showfreqs (frequency spectrum) overlays with customizable colors, opacity, and positioning.\n\n4. HARDWARE ACCELERATION & BINARY AUTO-RESOLVER:\n   - Auto-detect GPU hardware acceleration (h264_nvenc, h264_qsv, h264_amf) with smooth fallback to software CPU (libx264).\n   - Implement a 4-tier binary lookup hierarchy (sys._MEIPASS -> local script dir -> ./bin/ -> system PATH).\n\n5. ASYNCHRONOUS TELEMETRY & CONCURRENCY:\n   - Never block the UI thread. Use worker threads (threading.Thread) and a thread-safe queue.Queue polled every 40ms by root.after().\n   - Intercept FFmpeg stderr stream line-by-line via regex to extract timestamp, total duration, rendering FPS, speed factor, and calculate percentage completion: Progress % = (Current Seconds / Total Seconds) * 100.\n\n6. RESILIENCE, CLEANUP & PACKAGING:\n   - Handle job cancellations safely by sending process group termination signals (taskkill /F /T /PID) and automatically cleaning up partial temporary files.\n   - Provide a complete AudioOverImageProducer.spec file for PyInstaller packaging into a single executable."
+}
