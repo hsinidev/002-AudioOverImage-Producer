@@ -1,6 +1,5 @@
-# AudioOverImage Producer (ID: `002`)
+# AudioOverImage Producer
 
-[![Project ID](https://img.shields.io/badge/Project%20ID-002-blue.svg)](https://github.com/hsinidev/002-AudioOverImage-Producer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Developer](https://img.shields.io/badge/Developer-Hsini%20Mohamed-green.svg)](https://hsini.dev)
 
